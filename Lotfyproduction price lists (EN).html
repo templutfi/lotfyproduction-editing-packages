@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotfy Production — Editing Packages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050b18;
+    --panel:#0a1a30;
+    --panel-2:#0f2440;
+    --line:#1c3a5c;
+    --text:#f2f6fc;
+    --muted:#8296b3;
+    --rec:#1668c9;
+    --cyan:#4da8ff;
+    --gold:#a9d6ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(22,104,201,0.16), transparent 60%),
+      radial-gradient(1000px 600px at 90% 110%, rgba(77,168,255,0.10), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+  }
+
+  .logo{
+    position:absolute;
+    top:0;
+    left:12px;
+    width:clamp(30px,7vw,54px);
+    height:auto;
+    opacity:0.95;
+  }
+  @media(max-width:600px){
+    .logo{ left:4px; top:-2px; }
+  }
+
+  /* ===== Header ===== */
+  .top{
+    position:relative;
+    width:100%;
+    max-width:1400px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:40px;
+    text-align:center;
+  }
+  .center-title{
+    font-family:'Bebas Neue', sans-serif;
+    font-size:clamp(34px,5vw,54px);
+    font-weight:400;
+    letter-spacing:6px;
+    line-height:1.15;
+    direction:ltr;
+    text-transform:uppercase;
+  }
+  .center-title span{color:var(--rec);}
+  .center-title .sub-line{
+    display:inline-block;
+    font-size:0.4em;
+    letter-spacing:4px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  /* ===== Cards row ===== */
+  .row{
+    width:100%;
+    max-width:1400px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    align-items:stretch;
+  }
+  @media(max-width:920px){
+    .row{grid-template-columns:1fr; max-width:440px;}
+  }
+  @media(max-width:600px){
+    body{padding:24px 18px;}
+  }
+
+  .card{
+    position:relative;
+    background:linear-gradient(180deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:22px 26px 20px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  /* film sprocket strip */
+  .card::before, .card::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0;
+    width:18px;
+    background-image:repeating-linear-gradient(180deg, transparent 0 10px, var(--bg) 10px 16px);
+    -webkit-mask: repeating-linear-gradient(180deg, #000 0 8px, transparent 8px 16px);
+            mask: repeating-linear-gradient(180deg, #000 0 8px, transparent 8px 16px);
+  }
+  .card::before{right:0; border-left:1px dashed var(--line);}
+  .card::after{left:0; border-right:1px dashed var(--line);}
+  .card-inner{padding:0 20px;}
+
+  .card .clip-no{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:2px;
+    direction:ltr;
+    text-align:left;
+    margin-bottom:18px;
+  }
+
+  .tier-name{
+    font-size:26px;
+    font-weight:700;
+    margin-bottom:8px;
+    text-align:center;
+  }
+  .tier-tagline{
+    color:var(--muted);
+    font-size:13.5px;
+    margin-bottom:26px;
+    min-height:0;
+    line-height:1.7;
+    text-align:center;
+  }
+
+  .price-row{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    font-family:'JetBrains Mono', monospace;
+    margin-bottom:6px;
+    direction:ltr;
+    justify-content:center;
+  }
+  .price-row .cur{font-size:30px;color:var(--text);font-weight:700;}
+  .price-row .num{font-size:42px;font-weight:700;color:var(--text);}
+  .price-note{
+    color:var(--muted);
+    font-size:12px;
+    font-family:'JetBrains Mono', monospace;
+    direction:ltr;
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  .divider{
+    height:1px;
+    background:var(--line);
+    margin:0 0 22px;
+  }
+
+  ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:16px;flex:1;}
+  li{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:14.5px;
+    line-height:1.6;
+    color:#d9d8e0;
+  }
+  li .mark{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--cyan);
+    font-size:13px;
+    margin-top:2px;
+    flex-shrink:0;
+  }
+
+  .cta{
+    display:block;
+    text-align:center;
+    padding:13px 0;
+    border-radius:4px;
+    font-weight:700;
+    font-size:14.5px;
+    text-decoration:none;
+    border:1px solid var(--line);
+    color:var(--text);
+    background:transparent;
+    transition:.25s;
+    cursor:pointer;
+  }
+
+  /* Basic */
+  .card.basic .clip-no, .card.basic .mark{color:var(--muted);}
+  .card.basic .cta:hover{background:var(--panel-2);border-color:#3a3946;}
+
+  /* Standard - featured */
+  .card.standard{
+    background:linear-gradient(180deg, #1c1a24, #17151d);
+    border:1px solid rgba(22,104,201,0.55);
+    transform:translateY(-8px);
+    box-shadow:0 25px 60px -20px rgba(22,104,201,0.45);
+  }
+  .card.standard .clip-no{color:var(--rec);}
+  .card.standard .mark{color:var(--rec);}
+  .card.standard .price-row .num, .card.standard .price-row .cur{color:var(--rec);}
+  .card.standard .cta{
+    background:var(--rec);
+    border-color:var(--rec);
+    color:#0a0a0d;
+  }
+  .card.standard .cta:hover{background:#ff6b85;}
+  .badge{
+    display:inline-block;
+    margin:0 auto 18px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:1.5px;
+    white-space:nowrap;
+    color:#0a0a0d;
+    background:var(--rec);
+    padding:5px 16px;
+    border-radius:20px;
+    font-weight:700;
+  }
+  .badge-wrap{text-align:center;}
+
+  /* Premium */
+  .card.premium .clip-no, .card.premium .mark{color:var(--gold);}
+  .card.premium .price-row .num, .card.premium .price-row .cur{color:var(--gold);}
+  .card.premium .cta:hover{background:var(--panel-2);border-color:var(--gold);color:var(--gold);}
+
+  .foot{
+    margin-top:40px;
+    color:var(--muted);
+    font-size:13px;
+    text-align:center;
+    max-width:600px;
+    line-height:1.9;
+  }
+  .foot b{color:var(--text);}
+  .extra-note{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    font-size:16px;
+    color:var(--text);
+    background:rgba(77,168,255,0.08);
+    border:1px solid rgba(77,168,255,0.5);
+    border-radius:8px;
+    padding:14px 26px;
+    margin:0 auto 14px auto;
+    max-width:520px;
+  }
+  .extra-icon{
+    font-size:20px;
+    color:var(--cyan);
+  }
+  .extra-text{
+    font-weight:500;
+  }
+  .extra-text b{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--cyan);
+    font-size:17px;
+    font-weight:700;
+  }
+  .foot-sub{
+    color:var(--muted);
+    font-size:13px;
+    max-width:600px;
+    margin:0 auto;
+    line-height:1.9;
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+    <img class="logo" src="data:image/png;base64,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" alt="Triangle logo">
+    <h1 class="center-title">LOTFY <span>PRODUCTION</span><br><span class="sub-line">editing packages</span></h1>
+  </div>
+
+  <div class="row">
+
+    <!-- BASIC -->
+    <div class="card basic">
+      <div class="card-inner">
+        <div class="tier-name">Basic</div>
+        <div class="tier-tagline">Great for short clips and everyday content</div>
+
+        <div class="price-row"><span class="cur">$</span><span class="num">50</span></div>
+        <div class="price-note">PER PROJECT · UP TO 30 SEC</div>
+
+        <div class="divider"></div>
+
+        <ul>
+          <li><span class="mark">▸</span> Cutting & footage arrangement</li>
+          <li><span class="mark">▸</span> Basic color correction</li>
+          <li><span class="mark">▸</span> Simple transitions</li>
+          <li><span class="mark">▸</span> Background music</li>
+          <li><span class="mark">▸</span> Delivery in 2–3 days</li>
+          <li><span class="mark">▸</span> 1 revision round</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STANDARD -->
+    <div class="card standard">
+      <div class="card-inner">
+        <div class="badge-wrap"><span class="badge">MOST POPULAR</span></div>
+        <div class="tier-name">Standard</div>
+        <div class="tier-tagline">For content that needs a sharper, more professional look</div>
+
+        <div class="price-row"><span class="cur">$</span><span class="num">100</span></div>
+        <div class="price-note">PER PROJECT · 30 SEC – 1.5 MIN</div>
+
+        <div class="divider"></div>
+
+        <ul>
+          <li><span class="mark">▸</span> Everything in Basic</li>
+          <li><span class="mark">▸</span> Professional color grading</li>
+          <li><span class="mark">▸</span> Custom transitions & effects</li>
+          <li><span class="mark">▸</span> Animated text & titles</li>
+          <li><span class="mark">▸</span> AI-generated images / video</li>
+          <li><span class="mark">▸</span> Delivery within 48 hours</li>
+          <li><span class="mark">▸</span> 3 revision rounds</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="card premium">
+      <div class="card-inner">
+        <div class="tier-name">Premium</div>
+        <div class="tier-tagline">The full edit — top-tier quality and detail</div>
+
+        <div class="price-row"><span class="cur">$</span><span class="num">150</span></div>
+        <div class="price-note">PER PROJECT · UP TO 3 MIN</div>
+
+        <div class="divider"></div>
+
+        <ul>
+          <li><span class="mark">▸</span> Everything in Standard</li>
+          <li><span class="mark">▸</span> Motion graphics & VFX</li>
+          <li><span class="mark">▸</span> Audio mixing & enhancement</li>
+          <li><span class="mark">▸</span> Delivery within 48 hours</li>
+          <li><span class="mark">▸</span> Unlimited revisions</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <div class="extra-note">
+      <span class="extra-icon">⏱</span>
+      <span class="extra-text">Any extra time beyond the package length is billed at <b>+30 sec = $25</b></span>
+    </div>
+    <div class="extra-note">
+      <span class="extra-icon">📦</span>
+      <span class="extra-text">Ordering more than 10 videos gets you a <b>10%</b> discount on the package price</span>
+    </div>
+    <p class="foot-sub">All prices in US Dollars ($). Duration and details may vary based on the project — <b>get in touch for a custom quote</b> if you need something outside these packages.</p>
+  </div>
+
+</body>
+</html>
